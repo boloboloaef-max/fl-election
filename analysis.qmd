@@ -1,6 +1,6 @@
 ---
-title: "2026 Florida Republican Primary for Governor"
-author: "Student"
+title: "2026 Florida Democratic Primary for Governor"
+author: "Angel Frias"
 format: html
 execute:
   echo: false
@@ -15,16 +15,16 @@ library(tidyverse)
 
 ## Results Overview
 
-Below are the statewide vote totals for the candidates in the 2026 Republican primary election for Governor across Florida's 67 counties.
+Below are the statewide vote totals for candidates in the 2026 Democratic primary election for Governor, aggregated across Florida's 67 counties.
 
 ```{r}
-#| label: plot-governor-primary
+#| label: plot-democratic-governor-primary
 
 # Locate all county result files
 files <- list.files("data", pattern = "\\.txt$", full.names = TRUE)
 
-# Read tab-delimited files and filter for the Republican gubernatorial primary
-gov_results <- read_tsv(
+# Read tab-delimited files and filter for the Democratic gubernatorial primary
+dem_gov_results <- read_tsv(
   files,
   col_names = c(
     "county_code", "county_name", "election_id", "election_date",
@@ -37,19 +37,21 @@ gov_results <- read_tsv(
     votes = col_double()
   )
 ) |>
-  filter(contest == "Governor", party == "REP") |>
+  filter(contest == "Governor", party == "DEM") |>
   summarize(total_votes = sum(votes, na.rm = TRUE), .by = candidate)
 
 # Create a horizontal bar chart of vote totals
-gov_results |>
+dem_gov_results |>
   ggplot(aes(x = total_votes, y = fct_reorder(candidate, total_votes))) +
   geom_col(fill = "steelblue") +
   scale_x_continuous(labels = scales::comma) +
   labs(
-    title = "2026 Florida Republican Primary: Governor",
+    title = "2026 Florida Democratic Primary: Governor",
     subtitle = "Total votes by candidate across all 67 counties",
     x = "Total Votes",
     y = NULL
   ) +
   theme_minimal()
 ```
+
+David Jolly and Gwen Graham received the most votes, with 762,160 statewide, and won the Democratic nomination for Governor. Dayna Marie Foster placed second with 189,421 votes.
