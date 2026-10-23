@@ -1,0 +1,55 @@
+---
+title: "2026 Florida Republican Primary for Governor"
+author: "Student"
+format: html
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+library(tidyverse)
+```
+
+## Results Overview
+
+Below are the statewide vote totals for the candidates in the 2026 Republican primary election for Governor across Florida's 67 counties.
+
+```{r}
+#| label: plot-governor-primary
+
+# Locate all county result files
+files <- list.files("data", pattern = "\\.txt$", full.names = TRUE)
+
+# Read tab-delimited files and filter for the Republican gubernatorial primary
+gov_results <- read_tsv(
+  files,
+  col_names = c(
+    "county_code", "county_name", "election_id", "election_date",
+    "election_name", "precinct_id", "precinct_name", "total_registered",
+    "ballots_cast", "blank1", "blank2", "contest", "district",
+    "contest_code", "candidate", "party", "party_num", "doe_id", "votes"
+  ),
+  col_types = cols(
+    .default = col_character(),
+    votes = col_double()
+  )
+) |>
+  filter(contest == "Governor", party == "REP") |>
+  summarize(total_votes = sum(votes, na.rm = TRUE), .by = candidate)
+
+# Create a horizontal bar chart of vote totals
+gov_results |>
+  ggplot(aes(x = total_votes, y = fct_reorder(candidate, total_votes))) +
+  geom_col(fill = "steelblue") +
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title = "2026 Florida Republican Primary: Governor",
+    subtitle = "Total votes by candidate across all 67 counties",
+    x = "Total Votes",
+    y = NULL
+  ) +
+  theme_minimal()
+```
